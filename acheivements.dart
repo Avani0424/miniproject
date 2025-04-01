@@ -3,8 +3,29 @@ import 'package:miniproject/skills.dart';
 import 'package:provider/provider.dart';
 import 'resume_provider.dart'; // Import the ResumeProvider
 
-class AchievementsPage extends StatelessWidget {
+class AchievementsPage extends StatefulWidget {
   const AchievementsPage({Key? key}) : super(key: key);
+
+  @override
+  State<AchievementsPage> createState() => _AchievementsPageState();
+}
+
+class _AchievementsPageState extends State<AchievementsPage> {
+  late TextEditingController _achievementsController;
+
+  @override
+  void initState() {
+    super.initState();
+    final resumeProvider = Provider.of<ResumeProvider>(context, listen: false);
+    _achievementsController =
+        TextEditingController(text: resumeProvider.achievements);
+  }
+
+  @override
+  void dispose() {
+    _achievementsController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,20 +34,15 @@ class AchievementsPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFFAD9CD0), // Violet shade
+        backgroundColor: const Color(0xFFAD9CD0),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            Navigator.pop(context); // Go back to the previous screen
-          },
+          onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Achievements',
-          style: TextStyle(color: Colors.black),
-        ),
-        centerTitle: false,
+        title:
+            const Text('Achievements', style: TextStyle(color: Colors.black)),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: EdgeInsets.all(screenWidth * 0.05),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -34,40 +50,29 @@ class AchievementsPage extends StatelessWidget {
             Text(
               "Briefly summarize your professional achievements",
               style: TextStyle(
-                fontSize: screenWidth * 0.05,
-                fontWeight: FontWeight.bold,
-              ),
+                  fontSize: screenWidth * 0.05, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: screenHeight * 0.02),
             Text(
               "Get help writing your bullet points.",
               style: TextStyle(
-                fontSize: screenWidth * 0.04,
-                color: Colors.black54,
-              ),
+                  fontSize: screenWidth * 0.04, color: Colors.black54),
             ),
             SizedBox(height: screenHeight * 0.03),
-            // Using Consumer to read and update the provider's value
-            Consumer<ResumeProvider>(
-              builder: (context, resumeProvider, child) {
-                return TextField(
-                  maxLines: null,
-                  expands: true,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(screenWidth * 0.02),
-                    ),
-                    fillColor: const Color(0xFFFDECEF), // Background color
-                    filled: true,
-                  ),
-                  controller: TextEditingController(
-                    text: resumeProvider.achievements,
-                  ),
-                  onChanged: (value) {
-                    resumeProvider
-                        .updateAchievements(value); // Update achievements
-                  },
-                );
+            TextField(
+              maxLines: null,
+              keyboardType: TextInputType.multiline,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(screenWidth * 0.02),
+                ),
+                fillColor: const Color(0xFFFDECEF),
+                filled: true,
+              ),
+              controller: _achievementsController,
+              onChanged: (value) {
+                Provider.of<ResumeProvider>(context, listen: false)
+                    .updateAchievements(value);
               },
             ),
             SizedBox(height: screenHeight * 0.03),
@@ -75,39 +80,31 @@ class AchievementsPage extends StatelessWidget {
               alignment: Alignment.bottomRight,
               child: ElevatedButton(
                 onPressed: () {
-                  // Validate if achievements are provided
-                  if (Provider.of<ResumeProvider>(context, listen: false)
-                      .achievements
-                      .isEmpty) {
-                    // Show a Snackbar if the field is empty
+                  final achievements =
+                      Provider.of<ResumeProvider>(context, listen: false)
+                          .achievements;
+                  if (achievements.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                           content: Text('Please provide your achievements')),
                     );
                   } else {
-                    // Proceed to the next screen if achievements are not empty
                     Navigator.push(
                       context,
                       PageRouteBuilder(
                         pageBuilder: (context, animation, secondaryAnimation) =>
-                            Skills(), // Next page
+                            Skills(),
                         transitionsBuilder:
                             (context, animation, secondaryAnimation, child) {
-                          var tween = Tween(begin: 0.0, end: 1.0);
-                          var fadeAnimation = animation.drive(tween);
-
                           return FadeTransition(
-                            opacity: fadeAnimation,
-                            child: child,
-                          );
+                              opacity: animation, child: child);
                         },
                       ),
                     );
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      const Color(0xFF4B0082), // Darker violet for button
+                  backgroundColor: const Color(0xFF4B0082),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(screenWidth * 0.02),
                   ),
@@ -116,18 +113,10 @@ class AchievementsPage extends StatelessWidget {
                     vertical: screenHeight * 0.015,
                   ),
                 ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Next',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: screenWidth * 0.04,
-                      ),
-                    ),
-                    SizedBox(width: screenWidth * 0.02),
-                  ],
+                child: Text(
+                  'Next',
+                  style: TextStyle(
+                      color: Colors.white, fontSize: screenWidth * 0.04),
                 ),
               ),
             ),
