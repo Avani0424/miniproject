@@ -36,10 +36,8 @@ class _SkillsState extends State<Skills> {
                     Selectscreen(),
                 transitionsBuilder:
                     (context, animation, secondaryAnimation, child) {
-                  var tween = Tween(begin: 0.0, end: 1.0);
-                  var fadeAnimation = animation.drive(tween);
                   return FadeTransition(
-                    opacity: fadeAnimation,
+                    opacity: animation,
                     child: child,
                   );
                 },
@@ -51,7 +49,6 @@ class _SkillsState extends State<Skills> {
           'Skills',
           style: TextStyle(color: Colors.black),
         ),
-        centerTitle: false,
       ),
       body: Padding(
         padding: EdgeInsets.all(horizontalPadding),
@@ -76,25 +73,31 @@ class _SkillsState extends State<Skills> {
                 ),
               ),
               SizedBox(height: verticalPadding),
-              TextFormField(
-                controller: _skillsController,
-                maxLines: null,
-                expands: true,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
+
+              // Fix: Wrap TextFormField inside a SizedBox
+              SizedBox(
+                height: screenHeight * 0.2, // Adjust height to prevent overflow
+                child: TextFormField(
+                  controller: _skillsController,
+                  maxLines: null,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    fillColor: const Color(0xFFFDECEF),
+                    filled: true,
                   ),
-                  fillColor: const Color(0xFFFDECEF),
-                  filled: true,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter some skills';
+                    }
+                    return null;
+                  },
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter some skills';
-                  }
-                  return null;
-                },
               ),
+
               SizedBox(height: verticalPadding),
+
               Align(
                 alignment: Alignment.bottomRight,
                 child: ElevatedButton(
@@ -108,10 +111,8 @@ class _SkillsState extends State<Skills> {
                                   const Curriculum(),
                           transitionsBuilder:
                               (context, animation, secondaryAnimation, child) {
-                            var tween = Tween(begin: 0.0, end: 1.0);
-                            var fadeAnimation = animation.drive(tween);
                             return FadeTransition(
-                              opacity: fadeAnimation,
+                              opacity: animation,
                               child: child,
                             );
                           },
@@ -129,15 +130,9 @@ class _SkillsState extends State<Skills> {
                       vertical: buttonPaddingVertical,
                     ),
                   ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: const [
-                      Text(
-                        'Next',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      SizedBox(width: 5),
-                    ],
+                  child: const Text(
+                    'Next',
+                    style: TextStyle(color: Colors.white),
                   ),
                 ),
               ),
