@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:miniproject/forgot.dart';
-import 'package:miniproject/selectscreen.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -15,10 +15,39 @@ class _LoginState extends State<Login> {
   final _formKey = GlobalKey<FormState>();
   bool _obscurePassword = true;
 
+  final String apiUrl =
+      "http://10.0.2.2:8000/ping"; // Replace with your local IP
+
   void _togglePasswordVisibility() {
     setState(() {
       _obscurePassword = !_obscurePassword;
     });
+  }
+
+  // Function to check API server status
+  Future<void> checkServerStatus() async {
+    try {
+      final response = await http.get(Uri.parse(apiUrl));
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        _showSnackBar("✅ Server is running: ${data['message']}");
+      } else {
+        _showSnackBar("❌ Server error: ${response.statusCode}");
+      }
+    } catch (e) {
+      _showSnackBar("🚨 Failed to connect to server: $e");
+    }
+  }
+
+  // Snackbar to show messages
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: Duration(seconds: 2),
+      ),
+    );
   }
 
   @override
@@ -91,28 +120,12 @@ class _LoginState extends State<Login> {
                     SizedBox(height: screenHeight * 0.01),
                     Align(
                       alignment: Alignment.centerRight,
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            PageRouteBuilder(
-                              pageBuilder:
-                                  (context, animation, secondaryAnimation) =>
-                                      Forgot(),
-                              transitionsBuilder: (context, animation,
-                                  secondaryAnimation, child) {
-                                var begin = 0.0;
-                                var end = 1.0;
-                                var tween = Tween(begin: begin, end: end);
-                                var fadeAnimation = animation.drive(tween);
-                                return FadeTransition(
-                                    opacity: fadeAnimation, child: child);
-                              },
-                            ),
-                          );
-                        },
-                        child: Padding(
-                          padding: EdgeInsets.only(right: screenWidth * 0.05),
+                      child: Padding(
+                        padding: EdgeInsets.only(right: screenWidth * 0.05),
+                        child: TextButton(
+                          onPressed: () {
+                            // Handle forgot password
+                          },
                           child: Text(
                             'Forgot Password?',
                             style: TextStyle(
@@ -128,23 +141,7 @@ class _LoginState extends State<Login> {
                     ElevatedButton(
                       onPressed: () {
                         if (_formKey.currentState?.validate() ?? false) {
-                          Navigator.push(
-                            context,
-                            PageRouteBuilder(
-                              pageBuilder:
-                                  (context, animation, secondaryAnimation) =>
-                                      Selectscreen(),
-                              transitionsBuilder: (context, animation,
-                                  secondaryAnimation, child) {
-                                var begin = 0.0;
-                                var end = 1.0;
-                                var tween = Tween(begin: begin, end: end);
-                                var fadeAnimation = animation.drive(tween);
-                                return FadeTransition(
-                                    opacity: fadeAnimation, child: child);
-                              },
-                            ),
-                          );
+                          // Handle login logic
                         }
                       },
                       style: ElevatedButton.styleFrom(
@@ -163,6 +160,27 @@ class _LoginState extends State<Login> {
                             fontSize: screenWidth * 0.05, color: Colors.white),
                       ),
                     ),
+                    SizedBox(height: screenHeight * 0.02),
+                    ElevatedButton(
+                      onPressed: () {
+                        checkServerStatus(); // Call API when pressed
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.orange,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: screenWidth * 0.08,
+                          vertical: screenHeight * 0.015,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                      child: Text(
+                        'Check Server Status',
+                        style: TextStyle(
+                            fontSize: screenWidth * 0.045, color: Colors.white),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -175,6 +193,7 @@ class _LoginState extends State<Login> {
   }
 }
 
+// Custom input field widget
 class CustomInputField extends StatelessWidget {
   final IconData icon;
   final String hintText;
