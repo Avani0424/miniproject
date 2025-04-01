@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:miniproject/addphotoandsignaturepage.dart'; // Import your next page
 import 'package:miniproject/selectscreen.dart';
 
 class Curriculum extends StatefulWidget {
@@ -27,7 +26,7 @@ class _CurriculumState extends State<Curriculum> {
         context,
         PageRouteBuilder(
           pageBuilder: (context, animation, secondaryAnimation) =>
-              AddPhotoAndSignaturePage(), // Go to the next page
+              Selectscreen(), // Go to the next page
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             var tween = Tween(begin: 0.0, end: 1.0);
             var fadeAnimation = animation.drive(tween);
