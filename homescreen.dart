@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:miniproject/login.dart';
-import 'package:miniproject/selectscreen.dart';
+
+import 'package:miniproject/templateselectionpage.dart';
 
 class Homescreen extends StatefulWidget {
   const Homescreen({super.key});
@@ -141,7 +142,7 @@ class _HomescreenState extends State<Homescreen> {
                             PageRouteBuilder(
                               pageBuilder:
                                   (context, animation, secondaryAnimation) =>
-                                      Selectscreen(),
+                                      TemplateSelectionPage(),
                               transitionsBuilder: (context, animation,
                                   secondaryAnimation, child) {
                                 var tween = Tween(begin: 0.0, end: 1.0);
